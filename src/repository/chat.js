@@ -8,7 +8,7 @@ import redisClient from "../configs/redis.js";
  * @param {{ version: string, room_id: string, title: string, contents: string, references?: JSON }} dto
  * @returns {string} 생성된 채팅의 아이디
  */
-export const createChatSQL = async (userIp, dto) => {
+export const createChat = async (userIp, dto) => {
   const newUlid = ulid();
   const { contents, version, room, references } = dto;
   const query = `INSERT INTO chat (chat_id, user_ip, version, contents, room, references, created_at)
@@ -30,7 +30,7 @@ VALUES (?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())`;
  * @param {string} roomId - 채팅의 room 내의 room_id
  * @returns 캐시된 채팅 내역이 있다면 캐시된 내역, 없다면 디비에서 받아온 내역.
  */
-export const findAllChatsSQL = async (roomId) => {
+export const findAllChats = async (roomId) => {
   let chats;
   const cachedChats = await redisClient.lRange(roomId, 0, -1);
   const query = `SELECT * FROM chat WHERE room ->> '$."room_id"' = ?`;
@@ -48,7 +48,7 @@ export const findAllChatsSQL = async (roomId) => {
  * @param {string} chatId - 채팅의 chat_id
  * @returns 조회된 채팅
  */
-export const findOneChatByIdSQL = async (chatId) => {
+export const findOneChatById = async (chatId) => {
   const query = `SELECT * FROM chat WHERE chat_id = ?`;
   const [rows] = (await db.query(query, [chatId]))[0];
   return rows;
@@ -72,7 +72,7 @@ export const findUserIpById = async (chatId) => {
  * @param {string} chatId - 채팅 아이디
  * @param {{ version?: string, room_id?: string, title?: string, contents?: string, references?: JSON }} dto - update dto
  */
-export const updateChatByIdSQL = async (chatId, dto) => {
+export const updateChatById = async (chatId, dto) => {
   const setClauses = [];
   const values = [];
   Object.keys(dto).forEach((data) => {
@@ -93,7 +93,7 @@ export const updateChatByIdSQL = async (chatId, dto) => {
  * @param {string} chatId - 채팅 아이디
  * @returns 삭제된 row 수
  */
-export const deleteChatByIdSQL = async (chatId) => {
+export const deleteChatById = async (chatId) => {
   const query = `DELETE FROM chat WHERE chat_id = ?`;
   const [rows] = await db.query(query, chatId);
   return rows.affectedRows;

@@ -1,4 +1,4 @@
-export const dropChatTableSQL = "DROP TABLE IF EXISTS comment";
+export const dropChatTableSQL = "DROP TABLE IF EXISTS chat";
 
 export const createChatTableSQL = `CREATE TABLE IF NOT EXISTS chat (
   version VARCHAR(10) NOT NULL,
