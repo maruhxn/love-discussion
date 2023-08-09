@@ -11,18 +11,25 @@ import redisClient from "../configs/redis.js";
 export const createChat = async (userIp, dto) => {
   const newUlid = ulid();
   const { contents, version, room, references } = dto;
-  const query = `INSERT INTO chat (chat_id, user_ip, version, contents, room, references, created_at)
-VALUES (?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())`;
+  const query = `INSERT INTO chat (chat_id, user_ip, version, contents, room_id, room, references, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())`;
   await db.query(query, [
     newUlid,
     userIp,
     version,
     contents,
+    room.room_id,
     JSON.stringify(room),
     JSON.stringify(references),
   ]);
 
   return newUlid;
+};
+
+export const findAllChatsNotCached = async () => {
+  const query = `SELECT * FROM chat WHERE isCached = 0`;
+  const chats = (await db.query(query))[0];
+  return chats;
 };
 
 /**
@@ -32,15 +39,27 @@ VALUES (?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())`;
  */
 export const findAllChats = async (roomId) => {
   let chats;
-  const cachedChats = await redisClient.lRange(roomId, 0, -1);
-  const query = `SELECT * FROM chat WHERE room ->> '$."room_id"' = ?`;
+  const cachedChatsString = await redisClient.LRANGE(roomId, 0, -1);
+  const cachedChats = cachedChatsString.map((item) => JSON.parse(item));
+  const query = `SELECT * FROM chat WHERE room_id = ?`;
 
-  if (cachedChats.length <= 0) {
+  if (cachedChatsString.length <= 0) {
     chats = (await db.query(query, [roomId]))[0];
-    await redisClient.lPush(roomId, JSON.stringify(chats));
+
+    if (chats.length > 0) {
+      const chatIdsToUpdate = chats.map((chat) => chat.chat_id);
+      // TODO: 저장 시 isCached = true로 변경해주기.
+      await db.query("UPDATE chat SET isCached = 1 WHERE chat_id IN (?)", [
+        chatIdsToUpdate,
+      ]);
+
+      chats.forEach(
+        async (chat) => await redisClient.LPUSH(roomId, JSON.stringify(chat))
+      );
+    }
   }
 
-  return chats ?? JSON.parse(cachedChats);
+  return chats ?? cachedChats;
 };
 
 /**
@@ -64,7 +83,7 @@ export const findUserIpById = async (chatId) => {
     `SELECT user_ip FROM chat WHERE chat_id = ?`,
     chatId
   );
-  return rows[0].user_ip;
+  return rows[0]?.user_ip;
 };
 
 /**
@@ -80,6 +99,10 @@ export const updateChatById = async (chatId, dto) => {
     values.push(
       typeof dto[data] === "object" ? JSON.stringify(dto[data]) : dto[data]
     );
+    if (data === "room") {
+      setClauses.push("room_id" + "=?");
+      values.push(dto[data].room_id);
+    }
   });
   values.push(chatId);
   const setClause = setClauses.join(", ");
@@ -95,6 +118,5 @@ export const updateChatById = async (chatId, dto) => {
  */
 export const deleteChatById = async (chatId) => {
   const query = `DELETE FROM chat WHERE chat_id = ?`;
-  const [rows] = await db.query(query, chatId);
-  return rows.affectedRows;
+  await db.query(query, chatId);
 };

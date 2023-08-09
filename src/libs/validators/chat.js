@@ -11,6 +11,6 @@ export const ChatValidator = z.object({
 export const ChatUpdateValidator = z.object({
   contents: z.string().min(1).max(255).optional(),
   references: z.any().optional(),
-  room: z.object().optional(),
+  room: z.any(),
   version: z.string().min(1).max(10).optional(),
 });
