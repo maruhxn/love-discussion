@@ -9,7 +9,6 @@ import hpp from "hpp";
 import http from "http";
 import morgan from "morgan";
 import redisClient from "./configs/redis.js";
-import { synchronize } from "./controllers/batch.controller.js";
 import HttpException from "./libs/http-exeception.js";
 import ErrorFilter from "./middlewares/error.filter.js";
 import chatRouter from "./routes/chats.routes.js";
@@ -46,7 +45,7 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/chats", chatRouter);
+app.use("/api/v1/chats", chatRouter);
 
 app.use((req, res, next) => {
   const error = new HttpException(
@@ -57,8 +56,6 @@ app.use((req, res, next) => {
 });
 
 app.use(ErrorFilter);
-
-setInterval(synchronize, 10000);
 
 const server = http.createServer(app);
 server.listen(app.get("port"), async () => {
