@@ -65,6 +65,7 @@ export const getOneChatById = async (req, res) => {
     throw new HttpException("채팅방 정보 및 인덱스 정보를 입력해주세요.", 400);
 
   const chat = await redisRepository.getOneChatFromRedis(roomId, index);
+  // const chat = await chatRepository.findOneChat(chatId);
 
   if (!chat) throw new HttpException("채팅 정보가 없습니다.", 404);
   if (chat.chat_id !== chatId)
@@ -92,15 +93,13 @@ export const updateChatById = async (req, res) => {
   if (Object.keys(parsedBody).length === 0)
     throw new HttpException("수정할 내용을 입력해주세요.", 400);
 
-  const updatedAmt = await chatRepository.updateChat(chatId, parsedBody);
-
-  if (updatedAmt === 0) throw new HttpException("채팅 정보가 없습니다.", 404); // 말고는 다른 경우가 없나?
-
   const oldChat = await redisRepository.getOneChatFromRedis(roomId, index);
 
   if (!oldChat) throw new HttpException("채팅 정보가 없습니다.", 404);
 
   const updatedChat = { ...oldChat, ...parsedBody, time: Date.now() };
+
+  await chatRepository.updateChat(chatId, parsedBody);
 
   await redisRepository.updateCachedChat(roomId, index, updatedChat);
 
@@ -120,10 +119,6 @@ export const deleteChatById = async (req, res) => {
   if (!roomId || !index)
     throw new HttpException("채팅방 정보 및 인덱스 정보를 입력해주세요.", 400);
 
-  const deletedAmt = await chatRepository.deleteChat(chatId);
-
-  if (deletedAmt === 0) throw new HttpException("채팅 정보가 없습니다.", 404);
-
   const oldChat = await redisRepository.getOneChatFromRedis(roomId, index);
 
   if (!oldChat) throw new HttpException("채팅 정보가 없습니다.", 404);
@@ -135,6 +130,8 @@ export const deleteChatById = async (req, res) => {
   };
 
   await redisRepository.updateCachedChat(roomId, index, deletedChat);
+
+  await chatRepository.deleteChat(chatId);
 
   return res.status(200).json({
     ok: true,

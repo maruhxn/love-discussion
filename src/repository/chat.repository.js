@@ -37,16 +37,15 @@ export const findAllChats = async (roomId) => {
 //  * @param {string} index - 조회할 채팅의 index
 //  * @returns {Promise<import("../libs/validators/chat.js").FullChat>}조회된 채팅
 //  */
-// export const findOneChat = async (roomId, index) => {
-//   const chat = await getOneChatFromRedis(roomId, index);
-//   return chat;
+// export const findOneChat = async (chatId) => {
+//   const [rows] = await db.query(`SELECT * FROM chat WHERE chat_id = ?`, chatId);
+//   return rows[0];
 // };
 
 /**
  * DB 채팅 수정
  * @param {string} chatId - 수정할 채팅의 chat.chat_id
  * @param {Promise<import("../libs/validators/chat.js").UpdateChatDto>} dto - update dto
- * @returns {number} - 수정된 row 수
  */
 export const updateChat = async (chatId, dto) => {
   const setClauses = [];
@@ -69,17 +68,14 @@ export const updateChat = async (chatId, dto) => {
 
   /* MySQL Synchronize */
   const query = `UPDATE chat SET ${setClause} WHERE chat_id = ?`;
-  const [rows] = await db.query(query, values);
-  return rows.affectedRows;
+  await db.query(query, values);
 };
 
 /**
  * DB 내의 채팅 삭제
  * @param {string} chatId - 삭제할 채팅의 chat.chat_id
- * @returns {number} - 삭제된 row 수
  */
 export const deleteChat = async (chatId) => {
   const query = `DELETE FROM chat WHERE chat_id = ?`;
-  const [rows] = await db.query(query, chatId);
-  return rows.affectedRows;
+  await db.query(query, chatId);
 };

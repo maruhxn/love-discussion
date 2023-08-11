@@ -260,31 +260,16 @@ describe("PATCH /api/v1/chats/:chatId", () => {
       });
     });
 
-    describe("올바른 body가 들어왔고", () => {
-      it("수정된 채팅 정보가 없다면 404 반환", async () => {
-        const response = await request(app)
-          .patch(`/api/v1/chats/1?roomId=1&index=0`)
-          .send({ message: "update!" })
-          .expect(404);
+    it("올바른 body가 들어왔고, 채팅 정보가 있다면 채팅 수정", async () => {
+      const response = await request(app)
+        .patch(`/api/v1/chats/${chatIds[0]}?roomId=1&index=0`)
+        .send({ message: "update!" })
+        .expect(201);
 
-        expect(response.status).toBe(404);
-        expect(response.body).toEqual({
-          ok: false,
-          msg: "채팅 정보가 없습니다.",
-        });
-      });
-
-      it("채팅 정보가 있다면 채팅 수정", async () => {
-        const response = await request(app)
-          .patch(`/api/v1/chats/${chatIds[0]}?roomId=1&index=0`)
-          .send({ message: "update!" })
-          .expect(201);
-
-        expect(response.status).toBe(201);
-        expect(response.body).toEqual({
-          ok: true,
-          msg: "채팅 수정 성공",
-        });
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual({
+        ok: true,
+        msg: "채팅 수정 성공",
       });
     });
   });
@@ -327,29 +312,15 @@ describe("DELETE /api/v1/chats/:chatId", () => {
     });
   });
 
-  describe("roomId와 index 모두 제공했고", () => {
-    it("수정된 채팅 정보가 없다면 404 반환", async () => {
-      const response = await request(app)
-        .delete(`/api/v1/chats/1?roomId=1&index=0`)
-        .expect(404);
+  it("roomId와 index 모두 제공했고, 채팅 정보가 있다면 채팅 삭제(=수정)", async () => {
+    const response = await request(app)
+      .delete(`/api/v1/chats/${chatIds[0]}?roomId=1&index=0`)
+      .expect(200);
 
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({
-        ok: false,
-        msg: "채팅 정보가 없습니다.",
-      });
-    });
-
-    it("채팅 정보가 있다면 채팅 삭제(=수정)", async () => {
-      const response = await request(app)
-        .delete(`/api/v1/chats/${chatIds[0]}?roomId=1&index=0`)
-        .expect(200);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
-        ok: true,
-        msg: "채팅 삭제 성공",
-      });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      ok: true,
+      msg: "채팅 삭제 성공",
     });
   });
 });
