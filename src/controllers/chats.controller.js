@@ -10,7 +10,7 @@ import * as redisRepository from "../repository/redis.repository.js";
 export const getAllChats = async (req, res) => {
   const { roomId } = req.query;
 
-  if (!roomId) throw new HttpException("채팅방 정보가 없습니다.", 404);
+  if (!roomId) throw new HttpException("채팅방 정보를 입력해주세요.", 400);
 
   const chats = await chatRepository.findAllChats(roomId);
 
@@ -64,7 +64,7 @@ export const getOneChatById = async (req, res) => {
   if (!roomId || !index)
     throw new HttpException("채팅방 정보 및 인덱스 정보를 입력해주세요.", 400);
 
-  const chat = await chatRepository.findOneChat(roomId, index);
+  const chat = await redisRepository.getOneChatFromRedis(roomId, index);
 
   if (!chat) throw new HttpException("채팅 정보가 없습니다.", 404);
   if (chat.chat_id !== chatId)
@@ -96,11 +96,9 @@ export const updateChatById = async (req, res) => {
 
   if (updatedAmt === 0) throw new HttpException("채팅 정보가 없습니다.", 404); // 말고는 다른 경우가 없나?
 
-  const oldChat = await chatRepository.findOneChat(roomId, index);
+  const oldChat = await redisRepository.getOneChatFromRedis(roomId, index);
 
   if (!oldChat) throw new HttpException("채팅 정보가 없습니다.", 404);
-  if (oldChat.chat_id !== chatId)
-    throw new HttpException("채팅 아이디가 일치하지 않습니다.", 400);
 
   const updatedChat = { ...oldChat, ...parsedBody, time: Date.now() };
 
@@ -126,11 +124,9 @@ export const deleteChatById = async (req, res) => {
 
   if (deletedAmt === 0) throw new HttpException("채팅 정보가 없습니다.", 404);
 
-  const oldChat = await chatRepository.findOneChat(roomId, index);
+  const oldChat = await redisRepository.getOneChatFromRedis(roomId, index);
 
   if (!oldChat) throw new HttpException("채팅 정보가 없습니다.", 404);
-  if (oldChat.chat_id !== chatId)
-    throw new HttpException("채팅 아이디가 일치하지 않습니다.", 400);
 
   const deletedChat = {
     ...oldChat,

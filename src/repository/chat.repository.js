@@ -1,8 +1,5 @@
 import db from "../configs/db.js";
-import {
-  getAllChatsFromRedis,
-  getOneChatFromRedis,
-} from "./redis.repository.js";
+import { getAllChatsFromRedis } from "./redis.repository.js";
 
 /**
  * 채팅 생성
@@ -34,16 +31,16 @@ export const findAllChats = async (roomId) => {
   return await getAllChatsFromRedis(roomId);
 };
 
-/**
- * 채팅 아이디 및 index를 통한 채팅 단일 조회
- * @param {string} roomId - 조회할 채팅방의 room.room_id
- * @param {string} index - 조회할 채팅의 index
- * @returns {Promise<import("../libs/validators/chat.js").FullChat>}조회된 채팅
- */
-export const findOneChat = async (roomId, index) => {
-  const chat = await getOneChatFromRedis(roomId, index);
-  return chat;
-};
+// /**
+//  * 채팅 아이디 및 index를 통한 채팅 단일 조회
+//  * @param {string} roomId - 조회할 채팅방의 room.room_id
+//  * @param {string} index - 조회할 채팅의 index
+//  * @returns {Promise<import("../libs/validators/chat.js").FullChat>}조회된 채팅
+//  */
+// export const findOneChat = async (roomId, index) => {
+//   const chat = await getOneChatFromRedis(roomId, index);
+//   return chat;
+// };
 
 /**
  * DB 채팅 수정

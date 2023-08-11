@@ -8,11 +8,13 @@ async function connectDB() {
   const connection = await mysql.createConnection(
     process.env.NODE_ENV === "production"
       ? process.env.MAIN_DATABASE_URL
-      : process.env.DEV_DATABASE_URL
+      : process.env.NODE_ENV === "development"
+      ? process.env.DEV_DATABASE_URL
+      : process.env.TEST_DATABASE_URL
   );
   // await connection.query(dropChatTableSQL);
   await connection.query(createChatTableSQL);
-  console.log("Connected to PlanetScale!");
+  console.log("Connected to DB!");
   return connection;
 }
 
