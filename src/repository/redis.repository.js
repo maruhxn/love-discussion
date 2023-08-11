@@ -7,7 +7,7 @@ import redisClient from "../configs/redis.js";
  * @param {import("../libs/validators/chat.js").FullChat} value
  * @returns {Promise<void>}
  */
-export const pushToCachedChats = async (roomId, value) => {
+export const pushChatToRedis = async (roomId, value) => {
   await redisClient
     .multi()
     .LPUSH(`v1@${roomId}`, JSON.stringify(value))
@@ -16,7 +16,7 @@ export const pushToCachedChats = async (roomId, value) => {
 };
 
 /**
- * UPDATE 혹은 DELETE 요청 시 이전 데이터를 삭제 후 새로운 데이터 삽입.
+ * UPDATE 혹은 DELETE 요청 시 index에 해당하는 char 수정
  * @param {string} roomId
  * @param {string} index
  * @param {import("../libs/validators/chat.js").FullChat} updatedChat
@@ -27,7 +27,7 @@ export const updateCachedChat = async (roomId, index, updatedChat) => {
 };
 
 /**
- * Redis에서 roomId와 대응되는 모든 value(채팅 내역 최대 100개) 불러오기
+ * roomId와 대응되는 모든 채팅 내역 불러오기
  * @param {string} roomId
  * @returns {Promise<import("../libs/validators/chat.js").FullChat[]>}
  */
@@ -38,7 +38,7 @@ export const getAllChatsFromRedis = async (roomId) => {
 };
 
 /**
- * Redis에서 roomId 및 index와 대응되는 chat 가져오기
+ * roomId 및 index와 대응되는 chat 가져오기
  * @param {string} roomId
  * @param {string} index
  * @returns {Promise<import("../libs/validators/chat.js").FullChat>}

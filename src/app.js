@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 import express from "express";
 import helmet from "helmet";
 import hpp from "hpp";
-import http from "http";
 import morgan from "morgan";
 import redisClient from "./configs/redis.js";
 import HttpException from "./libs/http-exeception.js";
@@ -57,13 +56,4 @@ app.use((req, res, next) => {
 
 app.use(ErrorFilter);
 
-const server = http.createServer(app);
-server.listen(app.get("port"), async () => {
-  try {
-    console.log(
-      `⚡️[server]: Server is running at http://localhost:${app.get("port")}`
-    );
-  } catch (error) {
-    console.log(error);
-  }
-});
+export default app;
