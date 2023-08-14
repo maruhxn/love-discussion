@@ -4,7 +4,7 @@
   "description": "연애토론 게시판",
   "main": "src/server.js",
   "scripts": {
-    "start": "NODE_ENV=production PORT=8080 pm2 start src/server.js --name server",
+    "start": "NODE_ENV=production PORT=8080 node src/server.js",
     "dev": "NODE_ENV=development nodemon",
     "test": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
