@@ -1,4 +1,4 @@
-import { ulid } from "ulid";
+import * as uuid from "uuid";
 import HttpException from "../libs/http-exeception.js";
 import { ChatValidator, UpdateChatValidator } from "../libs/validators/chat.js";
 import * as chatRepository from "../repository/chat.repository.js";
@@ -33,7 +33,7 @@ export const createChat = async (req, res) => {
     throw new HttpException("유저 정보를 1개 이상 입력해주세요.", 400);
 
   const chat = {
-    chat_id: ulid(),
+    chat_id: uuid.v4(),
     version,
     message,
     user,
@@ -41,7 +41,7 @@ export const createChat = async (req, res) => {
     time: Date.now(),
   };
 
-  const createdAmt = await chatRepository.createChat(chat);
+  const createdAmt = chatRepository.createChat(chat);
 
   if (createdAmt === 0) throw new HttpException("DB 문제 발생", 422);
 

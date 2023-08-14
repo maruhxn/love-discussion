@@ -14,6 +14,7 @@ async function connectDB() {
   );
   // await connection.query(dropChatTableSQL);
   await connection.query(createChatTableSQL);
+  // await connection.query(createTtlEventSQL);
   console.log("Connected to DB!");
   return connection;
 }

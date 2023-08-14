@@ -1,5 +1,18 @@
+import { createClient } from "redis";
 import config from "../configs/configs.js";
-import redisClient from "../configs/redis.js";
+let redisClient;
+
+(async () => {
+  redisClient = createClient({
+    url: process.env.REDIS_URL,
+  });
+  redisClient.on("error", (err) => console.log("client error", err));
+  redisClient.on("connect", () => console.log("client is connect"));
+  redisClient.on("reconnecting", () => console.log("client is reconnecting"));
+  redisClient.on("ready", () => console.log("client is ready"));
+
+  await redisClient.connect();
+})();
 
 /**
  * CREATE 요청 시 새로운 데이터를 앞에 추가하고, 100개 유지

@@ -16,18 +16,22 @@ describe("POST /api/v1/chats", () => {
     const response = await request(app)
       .post("/api/v1/chats")
       .send({
+        version: "v1",
+        message: "test message",
+        type: "message",
         room: {
-          version: "v1",
-          description: "contents",
-          title: "title",
           room_id: "1",
+          title: "연애 토론방",
+          description: "연애 토론방 주제 : ~~",
         },
         user: {
-          ip: "::1",
+          ip: "123,123",
+          uuid: "123-euei",
+          agent:
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
         },
-        message: "test",
-        version: "v1",
       });
+
     expect(response.status).toBe(201);
     expect(response.type).toBe("application/json");
     expect(response.body).toEqual({
@@ -114,7 +118,7 @@ describe("GET /api/v1/chats", () => {
     const response = await request(app)
       .get("/api/v1/chats?roomId=2")
       .expect(404);
-
+    console.log("체크", response.body);
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
       ok: false,
