@@ -65,9 +65,8 @@ jobs:
           port: 8080
           wait-for-service-stability-seconds: 1200
           copy-env-vars: |
-            MAIN_DATABASE_URL |
-            DEV_DATABASE_URL |
-            REDIS_URL |
+            MAIN_DATABASE_URL
+            REDIS_URL
             TEST
 
       - name: App Runner output
