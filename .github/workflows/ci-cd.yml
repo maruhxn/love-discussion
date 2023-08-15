@@ -33,15 +33,14 @@ jobs:
           MAIN_DATABASE_URL: ${{ secrets.MAIN_DATABASE_URL }}
           DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
-          TEST: testteststests
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: love-discussion
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build \
-            --build-arg MAIN_DATABASE_URL=${MAIN_DATABASE_URL} \
-            --build-arg DEV_DATABASE_URL=${DEV_DATABASE_URL} \
-            --build-arg REDIS_URL=${REDIS_URL} \
+            --build-arg MAIN_DATABASE_URL=$MAIN_DATABASE_URL \
+            --build-arg DEV_DATABASE_URL=$DEV_DATABASE_URL \
+            --build-arg REDIS_URL=$REDIS_URL \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
@@ -49,11 +48,6 @@ jobs:
       - name: Deploy to App Runner
         id: deploy-apprunner
         uses: awslabs/amazon-app-runner-deploy@main
-        env:
-          MAIN_DATABASE_URL: ${{ secrets.MAIN_DATABASE_URL }}
-          DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
-          TEST: testsets
         with:
           service: love-discussion
           image: ${{ steps.build-image.outputs.image }}
@@ -64,10 +58,6 @@ jobs:
           memory: 2
           port: 8080
           wait-for-service-stability-seconds: 1200
-          copy-env-vars: |
-            MAIN_DATABASE_URL
-            REDIS_URL
-            TEST
 
       - name: App Runner output
         run: echo "App runner output ${{ steps.deploy-apprunner.outputs.service-id }}"
