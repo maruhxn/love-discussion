@@ -53,6 +53,7 @@ jobs:
           MAIN_DATABASE_URL: ${{ secrets.MAIN_DATABASE_URL }}
           DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
+          TEST: testsets
         with:
           service: love-discussion
           image: ${{ steps.build-image.outputs.image }}
@@ -66,7 +67,8 @@ jobs:
           copy-env-vars: |
             MAIN_DATABASE_URL |
             DEV_DATABASE_URL |
-            REDIS_URL
+            REDIS_URL |
+            TEST
 
       - name: App Runner output
         run: echo "App runner output ${{ steps.deploy-apprunner.outputs.service-id }}"
