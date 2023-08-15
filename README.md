@@ -4,8 +4,7 @@ maruhxn
 
 ## TODO
 
-- BOT 추가
-- 성능 테스트
+- App runner with Docker(image-based) -> CI/CD
 - kafka 공부
 - planetscale branch 공부
 
@@ -41,10 +40,10 @@ PRIMARY KEY (chat_id)
 ## SCHEMA
 
 CREATE TABLE IF NOT EXISTS chat (
+chat_id VARCHAR(36) NOT NULL,
 version VARCHAR(10) NOT NULL,
-chat_id VARCHAR(26) NOT NULL,
-user JSON NOT NULL,
 message VARCHAR(255) NOT NULL,
+user JSON NOT NULL,
 room JSON NOT NULL,
 time BIGINT NOT NULL,
 PRIMARY KEY (chat_id)
@@ -61,7 +60,3 @@ Write Through 방식 사용
 ## POST
 
 - Redis에도 넣고, DB에도 넣음.
-
-## TODO
-
-- 통합 테스트
