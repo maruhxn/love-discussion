@@ -63,11 +63,12 @@ jobs:
           memory: 2
           port: 8080
           wait-for-service-stability-seconds: 1200
-          copy-secret-env-vars: |
-            MAIN_DATABASE_URL \
-            DEV_DATABASE_URL  \
-            TEST \
-            REDIS_URL \
+          copy-env-vars: |
+            MAIN_DATABASE_URL
+          copy-env-vars: |
+            DEV_DATABASE_URL
+          copy-env-vars: |
+            REDIS_URL
 
       - name: App Runner output
         run: echo "App runner output ${{ steps.deploy-apprunner.outputs.service-id }}"
