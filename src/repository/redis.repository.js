@@ -4,7 +4,10 @@ let redisClient;
 
 (async () => {
   redisClient = createClient({
-    url: process.env.REDIS_URL,
+    url:
+      process.env.NODE_ENV === "production"
+        ? process.env.MAIN_REDIS_URL
+        : process.env.DEV_REDIS_URL,
   });
   redisClient.on("error", (err) => console.log("client error", err));
   redisClient.on("connect", () => console.log("client is connect"));
