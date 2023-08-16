@@ -30,24 +30,21 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
-          MAIN_DATABASE_URL: ${{ secrets.MAIN_DATABASE_URL }}
-          DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: love-discussion
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build \
-            --build-arg MAIN_DATABASE_URL=$MAIN_DATABASE_URL \
-            --build-arg DEV_DATABASE_URL=$DEV_DATABASE_URL \
-            --build-arg REDIS_URL=$REDIS_URL \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       - name: Deploy to App Runner
         id: deploy-apprunner
         uses: awslabs/amazon-app-runner-deploy@main
+        env:
+          MAIN_DATABASE_URL: ${{ secrets.MAIN_DATABASE_URL }}
+          DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
         with:
           service: love-discussion
           image: ${{ steps.build-image.outputs.image }}
@@ -57,6 +54,10 @@ jobs:
           cpu: 1
           memory: 2
           port: 8080
+          copy-env-vars: |
+            MAIN_DATABASE_URL
+            DEV_DATABASE_URL
+            REDIS_URL
           wait-for-service-stability-seconds: 1200
 
       - name: App Runner output
