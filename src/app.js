@@ -35,11 +35,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // app.use("/api/v1/chats", rateLimiter);
 
-app.get("/check", (req, res) => {
-  const nodeVersion = process.version;
-  res.send(`Node.js version: ${nodeVersion}`);
-});
-
 app.use("/api/v1/chats", chatRouter);
 
 app.use((req, res, next) => {

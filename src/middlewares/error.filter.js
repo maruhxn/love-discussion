@@ -1,10 +1,8 @@
 import { z } from "zod";
-import logger from "../configs/logger.js";
 import HttpException from "../libs/http-exeception.js";
 
 const ErrorFilter = (err, req, res, next) => {
   const { stack, status = 500, message = "Server Error" } = err;
-  logger.error(stack);
   if (err instanceof HttpException) {
     return res.status(status).json({
       ok: false,
