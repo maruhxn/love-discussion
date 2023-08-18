@@ -3,6 +3,7 @@ import HttpException from "../libs/http-exeception.js";
 
 const ErrorFilter = (err, req, res, next) => {
   const { stack, status = 500, message = "Server Error" } = err;
+  console.error(err);
   if (err instanceof HttpException) {
     return res.status(status).json({
       ok: false,

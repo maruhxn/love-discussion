@@ -15,7 +15,7 @@ import chatRouter from "./routes/chats.routes.js";
 const app = express();
 const isProd = process.env.NODE_ENV === "production";
 
-app.set("port", process.env.PORT || 8080);
+app.set("port", 8080);
 app.set("trust proxy", 1);
 
 /* CONFIG */

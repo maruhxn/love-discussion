@@ -26,8 +26,8 @@ let redisClient;
 export const pushChatToRedis = async (roomId, value) => {
   await redisClient
     .multi()
-    .LPUSH(`v1@${roomId}`, JSON.stringify(value))
-    .LTRIM(`v1@${roomId}`, 0, config.MAX_CACHE_LENGTH - 1)
+    .LPUSH(`v1@love@${roomId}`, JSON.stringify(value))
+    .LTRIM(`v1@love@${roomId}`, 0, config.MAX_CACHE_LENGTH - 1)
     .exec();
 };
 
@@ -39,7 +39,11 @@ export const pushChatToRedis = async (roomId, value) => {
  * @returns {Promise<void>}
  */
 export const updateCachedChat = async (roomId, index, updatedChat) => {
-  await redisClient.LSET(`v1@${roomId}`, index, JSON.stringify(updatedChat));
+  await redisClient.LSET(
+    `v1@love@${roomId}`,
+    index,
+    JSON.stringify(updatedChat)
+  );
 };
 
 /**
@@ -48,7 +52,7 @@ export const updateCachedChat = async (roomId, index, updatedChat) => {
  * @returns {Promise<import("../libs/validators/chat.js").FullChat[]>}
  */
 export const getAllChatsFromRedis = async (roomId) => {
-  const chatStrings = await redisClient.LRANGE(`v1@${roomId}`, 0, -1);
+  const chatStrings = await redisClient.LRANGE(`v1@love@${roomId}`, 0, -1);
   const chats = chatStrings.map((chat) => JSON.parse(chat));
   return chats;
 };
@@ -60,5 +64,5 @@ export const getAllChatsFromRedis = async (roomId) => {
  * @returns {Promise<import("../libs/validators/chat.js").FullChat>}
  */
 export const getOneChatFromRedis = async (roomId, index) => {
-  return JSON.parse(await redisClient.LINDEX(`v1@${roomId}`, index));
+  return JSON.parse(await redisClient.LINDEX(`v1@love@${roomId}`, index));
 };

@@ -1,5 +1,4 @@
 import db from "../configs/db.js";
-import { getAllChatsFromRedis } from "./redis.repository.js";
 
 /**
  * 채팅 생성
@@ -20,15 +19,6 @@ VALUES (?, ?, ?, ?, ?, ?)`;
     chat.time,
   ]);
   return rows.affectedRows;
-};
-
-/**
- * 전체 채팅 조회 (req.query로 roomId 전달)
- * @param {string} roomId - 채팅방의 room.room_id
- * @returns {Promise<import("../libs/validators/chat.js").FullChat[]>}  캐시된 채팅 내역이 있다면 캐시된 내역, 없다면 디비에서 받아온 내역.
- */
-export const findAllChats = async (roomId) => {
-  return await getAllChatsFromRedis(roomId);
 };
 
 // /**

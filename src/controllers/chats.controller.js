@@ -12,7 +12,7 @@ export const getAllChats = async (req, res) => {
 
   if (!roomId) throw new HttpException("채팅방 정보를 입력해주세요.", 400);
 
-  const chats = await chatRepository.findAllChats(roomId);
+  const chats = await redisRepository.getAllChatsFromRedis(roomId);
 
   if (chats.length <= 0) throw new HttpException("채팅 내역이 없습니다.", 404);
 

@@ -9,10 +9,3 @@ export const createChatTableSQL = `CREATE TABLE IF NOT EXISTS chat (
   time BIGINT NOT NULL,
   PRIMARY KEY (chat_id)
   ) engine=InnoDB;`;
-
-// export const createTtlEventSQL = `CREATE EVENT ttl_event
-//   ON SCHEDULE EVERY 1 DAY
-//   DO
-//   BEGIN
-//     DELETE FROM chat WHERE time < NOW() - INTERVAL 7 DAY;
-//   END;`;
