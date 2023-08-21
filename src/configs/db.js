@@ -12,9 +12,7 @@ async function connectDB() {
       ? process.env.DEV_DATABASE_URL
       : process.env.TEST_DATABASE_URL
   );
-  // await connection.query(dropChatTableSQL);
   await connection.query(createChatTableSQL);
-  // await connection.query(createTtlEventSQL);
   console.log("Connected to DB!");
   return connection;
 }

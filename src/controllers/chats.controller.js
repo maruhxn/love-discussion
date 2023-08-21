@@ -56,7 +56,6 @@ export const createChat = async (req, res) => {
 /**
  * GET /chats/:chatId
  */
-// chatID를 받을 필요가 있을까? 인덱스를 받았는데?
 export const getOneChatById = async (req, res) => {
   const { roomId, index } = req.query;
   const { chatId } = req.params;
