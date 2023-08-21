@@ -34,7 +34,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // app.use("/api/v1/chats", rateLimiter);
-
 app.use("/api/v1/chats", chatRouter);
 
 app.use((req, res, next) => {

@@ -31,7 +31,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: love-fight
+          ECR_REPOSITORY: love-test
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -47,7 +47,7 @@ jobs:
           MAIN_REDIS_URL: ${{ secrets.MAIN_REDIS_URL }}
           DEV_REDIS_URL: ${{ secrets.DEV_REDIS_URL }}
         with:
-          service: love-fight
+          service: love-test
           image: ${{ steps.build-image.outputs.image }}
           access-role-arn: ${{ secrets.ROLE_ARN }}
           runtime: NODEJS_16

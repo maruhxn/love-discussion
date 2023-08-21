@@ -1,11 +1,10 @@
 import rateLimit from "express-rate-limit";
 
-// 10초에 5번만 요청할 수 있습니다.
 const rateLimiter = rateLimit({
-  windowMs: 1000, // 10초
-  max: 1000,
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  windowMs: 5000,
+  max: 3,
+  standardHeaders: true, // 헤더에 `RateLimit-*` 를 포함합니다
+  legacyHeaders: false, // `X-RateLimit-*` 헤더를 비활성화합니다.
   handler(req, res) {
     res.status(this.statusCode).json({
       ok: false,

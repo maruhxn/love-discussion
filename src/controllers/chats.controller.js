@@ -41,11 +41,11 @@ export const createChat = async (req, res) => {
     time: Date.now(),
   };
 
+  await redisRepository.pushChatToRedis(chat.room.room_id, chat);
+
   const createdAmt = chatRepository.createChat(chat);
 
   if (createdAmt === 0) throw new HttpException("DB 문제 발생", 422);
-
-  await redisRepository.pushChatToRedis(chat.room.room_id, chat);
 
   return res.status(201).json({
     ok: true,
@@ -64,7 +64,6 @@ export const getOneChatById = async (req, res) => {
     throw new HttpException("채팅방 정보 및 인덱스 정보를 입력해주세요.", 400);
 
   const chat = await redisRepository.getOneChatFromRedis(roomId, index);
-  // const chat = await chatRepository.findOneChat(chatId);
 
   if (!chat) throw new HttpException("채팅 정보가 없습니다.", 404);
   if (chat.chat_id !== chatId)
@@ -95,12 +94,17 @@ export const updateChatById = async (req, res) => {
   const oldChat = await redisRepository.getOneChatFromRedis(roomId, index);
 
   if (!oldChat) throw new HttpException("채팅 정보가 없습니다.", 404);
+  if (oldChat.chat_id !== chatId)
+    throw new HttpException("채팅 아이디가 일치하지 않습니다.", 400);
 
   const updatedChat = { ...oldChat, ...parsedBody, time: Date.now() };
 
-  await chatRepository.updateChat(chatId, parsedBody);
-
   await redisRepository.updateCachedChat(roomId, index, updatedChat);
+
+  await chatRepository.updateChat(chatId, {
+    ...parsedBody,
+    time: updatedChat.time,
+  });
 
   return res.status(201).json({
     ok: true,
@@ -121,6 +125,8 @@ export const deleteChatById = async (req, res) => {
   const oldChat = await redisRepository.getOneChatFromRedis(roomId, index);
 
   if (!oldChat) throw new HttpException("채팅 정보가 없습니다.", 404);
+  if (oldChat.chat_id !== chatId)
+    throw new HttpException("채팅 아이디가 일치하지 않습니다.", 400);
 
   const deletedChat = {
     ...oldChat,
